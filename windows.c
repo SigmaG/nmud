@@ -98,3 +98,11 @@ int write_win(WINDOW* win, char*l) {
 int write_main(struct windows* W, char* l) {
 	return write_win(W->m_win,l);
 }
+
+int write_top(struct windows* W, char* l) {
+	return write_win(W->t_win,l);
+}
+
+int write_right(struct windows* W, char* l) {
+	return write_win(W->r_win,l);
+}

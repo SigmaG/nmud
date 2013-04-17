@@ -12,3 +12,5 @@ int initialize_windows();
 struct windows* prepare_windows(struct conf* c);
 int close_windows();
 int write_main(struct windows* W, char* l);
+int write_top(struct windows* W, char* l);
+int write_right(struct windows* W, char* l);
