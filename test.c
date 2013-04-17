@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include "input.h"
 
 struct recv_info {
 	int sock;
@@ -11,9 +12,9 @@ void* recv_thread(void *arg) {
 	ri = (struct recv_info *) arg;
 	char *line;
 int i = 0;
-while (i < 10) {
-i+=1;
-//	while (1) {
+//while (i < 10) {
+//i+=1;
+	while (1) {
 		line = (char*) read_network_line(ri->sock);
 		write_main(ri->W,line);
 	}
@@ -21,6 +22,12 @@ i+=1;
 
 int main() {
 
+/*int z = 0;
+while (z < 256) {
+z++;
+	printf("%i - %c\n",z,(char) z);
+}
+exit(0);*/
 struct conf* cnf = (struct conf*) read_config();
 
 initialize_windows();
@@ -41,11 +48,26 @@ ri->W = W;
 
 pthread_create(&recv_pthr,NULL,&recv_thread,(void*) ri);
 void *res;
+
+pthread_t send_pthr;
+struct input_struct* is;
+is = malloc(sizeof(struct input_struct));
+is->W = W;
+is->sock = mudsock;
+
+pthread_create(&send_pthr,NULL,&handle_keypresses,(void*) is);
+
 pthread_join(recv_pthr,&res);
+
+
+
+
 
 close_connection(mudsock);
 sleep(2);
 close_windows();
+
+
 return 0;
 
 }

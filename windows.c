@@ -45,6 +45,7 @@ mvwhline(W->t_win,t_size,0,ACS_HLINE,COLS-r_size-1);
 mvwaddch(W->t_win,t_size,COLS-r_size-1,ACS_TTEE);
 mvwhline(W->t_win,t_size,COLS-r_size,ACS_HLINE,r_size+1);
 scrollok(W->t_win,TRUE);
+clearok(W->t_win,TRUE);
 wrefresh(W->t_win);
 
 WINDOW* rwin = newwin (LINES - t_size-1,r_size+1,t_size+1,COLS-r_size -1);
@@ -53,16 +54,20 @@ mvwvline(W->r_win,0,0,ACS_VLINE,LINES - t_size-3);
 mvwaddch(W->r_win,LINES-t_size-3,0,ACS_RTEE);
 mvwaddch(W->r_win,LINES-t_size-2,0,ACS_VLINE);
 scrollok(W->r_win,TRUE);
+clearok(W->r_win,TRUE);
 wrefresh(W->r_win);
 
 WINDOW* bwin = newwin (2, COLS-r_size-1,LINES-2,0);
 W->b_win = bwin;
 mvwhline(W->b_win,0,0,ACS_HLINE,COLS-r_size-1);
+scrollok(W->b_win,TRUE);
+clearok(W->b_win,TRUE);
 wrefresh(W->b_win);
 
 WINDOW* mwin = newwin(LINES - t_size - 3,COLS-r_size-1,t_size+1,0);
 W->m_win = mwin;
 scrollok(W->m_win,TRUE);
+clearok(W->m_win,TRUE);
 wrefresh(W->m_win);
 
 return W;
@@ -105,4 +110,27 @@ int write_top(struct windows* W, char* l) {
 
 int write_right(struct windows* W, char* l) {
 	return write_win(W->r_win,l);
+}
+
+int write_bottom(struct windows* W, char* l) {
+	return write_win(W->b_win,l);
+}
+
+int clear_window(WINDOW* win) {
+	wclear(win);
+	wrefresh(win);
+	return 0;
+}
+
+int clear_bottom(struct windows* W) {
+	clear_window(W->b_win);
+}
+int clear_top(struct windows* W) {
+	clear_window(W->t_win);
+}
+int clear_right(struct windows* W) {
+	clear_window(W->r_win);
+}
+int clear_main(struct windows* W) {
+	clear_window(W->m_win);
 }
