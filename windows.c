@@ -90,27 +90,9 @@ int write_main(struct windows* W, char* l) {
 */
 
 int write_win(WINDOW* win, char*l) {
-	char* l2; char* l0; char* ls;
-	ls = malloc(getmaxx(win)+2);
-	l2 = malloc((strlen(l)+1)*sizeof(char));
-	l0 = l2;
-	strncpy(l2,l,strlen(l)+1); 
-	while (1) {
-		if (strlen(l2) > getmaxx(win)+1) {
-			strncpy(ls,l2,getmaxx(win));
-			ls[getmaxx(win)] = '\n';
-			ls[getmaxx(win)] = '\0';
-			mvwprintw(win,getmaxy(win)-1,0,"%s",ls);
-			l2 += getmaxx(win)*sizeof(char);
-		} else {
-			mvwprintw(win,getmaxy(win)-1,0,"%s",l2);
-			break;
-		}
-	}
+	mvwprintw(win,getmaxy(win)-1,0,"%s",l);
 	wrefresh(win);
-	free(l0);
-	free(ls);
-
+	return 0;
 }
 
 int write_main(struct windows* W, char* l) {
