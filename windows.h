@@ -2,10 +2,15 @@
 #include "config.h"
 
 struct windows {
-	WINDOW* m_win;
-	WINDOW* t_win;
-	WINDOW* r_win;
-	WINDOW* b_win;
+	struct win* m_win;
+	struct win* t_win;
+	struct win* r_win;
+	struct win* b_win;
+};
+
+struct win {
+	WINDOW* w;
+	char** buf;
 };
 
 int initialize_windows();
