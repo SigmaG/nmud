@@ -5,110 +5,87 @@
 
 int initialize_windows() {
 
-initscr();
-start_color();
-raw();
-noecho();
-nonl();
-intrflush(stdscr,FALSE);
-keypad(stdscr,TRUE);
-return 0;
+	initscr();
+	start_color();
+	raw();
+	noecho();
+	nonl();
+	intrflush(stdscr,FALSE);
+	keypad(stdscr,TRUE);
+	
+	return 0;
 
 }
 
 int redraw_borders(struct windows* W) {
 
-int t_size = getmaxy(W->t_win->w)-1;
-int r_size = getmaxx(W->r_win->w)-1;
+	int t_size = getmaxy(W->t_win->w)-1;
+	int r_size = getmaxx(W->r_win->w)-1;
 
-mvwhline(W->t_win->w,t_size,0,ACS_HLINE,COLS-r_size-1);
-mvwaddch(W->t_win->w,t_size,COLS-r_size-1,ACS_TTEE);
-mvwhline(W->t_win->w,t_size,COLS-r_size,ACS_HLINE,r_size+1);
-wrefresh(W->t_win->w);
+	mvwhline(W->t_win->w,t_size,0,ACS_HLINE,COLS-r_size-1);
+	mvwaddch(W->t_win->w,t_size,COLS-r_size-1,ACS_TTEE);
+	mvwhline(W->t_win->w,t_size,COLS-r_size,ACS_HLINE,r_size+1);
+	wrefresh(W->t_win->w);
 
-mvwvline(W->r_win->w,0,0,ACS_VLINE,LINES - t_size-3);
-mvwaddch(W->r_win->w,LINES-t_size-3,0,ACS_RTEE);
-mvwaddch(W->r_win->w,LINES-t_size-2,0,ACS_VLINE);
-wrefresh(W->r_win->w);
+	mvwvline(W->r_win->w,0,0,ACS_VLINE,LINES - t_size-3);
+	mvwaddch(W->r_win->w,LINES-t_size-3,0,ACS_RTEE);
+	mvwaddch(W->r_win->w,LINES-t_size-2,0,ACS_VLINE);
+	wrefresh(W->r_win->w);
 
-mvwhline(W->b_win->w,0,0,ACS_HLINE,COLS-r_size-1);
-wrefresh(W->b_win->w);
+	mvwhline(W->b_win->w,0,0,ACS_HLINE,COLS-r_size-1);
+	wrefresh(W->b_win->w);
 
-wrefresh(W->m_win->w);
-return 0;
+	wrefresh(W->m_win->w);
+	return 0;
 }
 
 
 int close_windows() {
 
-endwin();
-return 0;
+	endwin();
+	return 0;
 
+}
+
+struct win* create_window(int rows, int cols, int x, int y, int buf_size) {
+
+	struct win* neww = malloc(sizeof(struct win));
+	WINDOW* wi = newwin (rows,cols,x,y);
+
+	neww->w = wi;
+
+	scrollok(neww->w,TRUE);
+	clearok(neww->w,TRUE);
+	wrefresh(neww->w);
+
+	return neww;
 }
 
 struct windows* prepare_windows(struct conf* cnf) {
 
-struct windows* W = malloc(sizeof(struct windows));
+	struct windows* W = malloc(sizeof(struct windows));
 
-int t_size;
-int r_size;
-if (cnf == NULL | cnf->t_size == 0) {
-t_size = 6;
-} else {
-t_size = cnf->t_size;
-}
-if (cnf == NULL | cnf->t_size == 0) {
-r_size = 25;
-} else {
-r_size = cnf->r_size;
-}
+	int t_size;
+	int r_size;
+	if (cnf == NULL | cnf->t_size == 0) {
+		t_size = 6;
+	} else {
+		t_size = cnf->t_size;
+	}
+	if (cnf == NULL | cnf->t_size == 0) {
+		r_size = 25;
+	} else {
+		r_size = cnf->r_size;
+	}
 
+	W->t_win = create_window(t_size+1,COLS,0,0,cnf->buffer);
+	W->r_win = create_window(LINES-t_size-1,r_size+1,t_size+1,COLS-r_size-1,cnf->buffer);
+	W->b_win = create_window(2,COLS-r_size-1,LINES-2,0,cnf->buffer);
+	W->m_win = create_window(LINES-t_size-3,COLS-r_size-1,t_size+1,0,cnf->buffer);
+	
 
-struct win* tw = malloc(sizeof(struct win));
-WINDOW* twin = newwin (t_size+1,COLS,0,0);
-
-tw->w = twin;
-W->t_win = tw;
-
-scrollok(W->t_win->w,TRUE);
-clearok(W->t_win->w,TRUE);
-wrefresh(W->t_win->w);
-
-
-WINDOW* rwin = newwin (LINES - t_size-1,r_size+1,t_size+1,COLS-r_size -1);
-struct win* rw = malloc(sizeof(struct win));
-
-rw->w = rwin;
-W->r_win = rw;
-
-scrollok(W->r_win->w,TRUE);
-clearok(W->r_win->w,TRUE);
-wrefresh(W->r_win->w);
-
-
-WINDOW* bwin = newwin (2, COLS-r_size-1,LINES-2,0);
-struct win* bw = malloc(sizeof(struct win));
-
-bw->w = bwin;
-W->b_win = bw;
-
-scrollok(W->b_win->w,TRUE);
-clearok(W->b_win->w,TRUE);
-wrefresh(W->b_win->w);
-
-
-WINDOW* mwin = newwin(LINES - t_size - 3,COLS-r_size-1,t_size+1,0);
-struct win* mw = malloc(sizeof(struct win));
-
-mw->w = mwin;
-W->m_win = mw;
-
-scrollok(W->m_win->w,TRUE);
-clearok(W->m_win->w,TRUE);
-wrefresh(W->m_win->w);
-
-redraw_borders(W);
-return W;
+	redraw_borders(W);
+	return W;
 }
 
 /*

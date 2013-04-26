@@ -16,6 +16,7 @@ if (cnf == NULL) {
 c->port = 0;
 c->r_size = 0;
 c->t_size = 0;
+c->buffer = 0;
 c->address = NULL;
 while (1) {
 	char* l = NULL;
@@ -55,7 +56,10 @@ while (1) {
 	if (strcmp(attr,"t_win") == 0) {
 		c->t_size = atoi(value);
 	}
-	
+	if (strcmp(attr,"buffer") == 0) {
+		c->buffer = atoi(value);
+	}	
+
 }
 return c;
 
@@ -68,6 +72,7 @@ struct conf* c = read_config();
 	printf("PORT: %s\n",c->port);
 	printf("RIGHT WINDOW SIZE: %d\n",c->r_size);
 	printf("TOP WINDOW SIZE: %d\n",c->t_size);
+	printf("BUFFER SIZE: %d\n",c->buffer);
 return 0;
 
 }
