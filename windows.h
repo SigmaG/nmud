@@ -19,3 +19,4 @@ int clear_main(struct windows* W);
 int clear_top(struct windows* W);
 int clear_right(struct windows* W);
 int clear_bottom(struct windows* W);
+int scroll_main(struct windows* W, int num);

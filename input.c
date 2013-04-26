@@ -32,6 +32,8 @@ void* handle_keypresses(void* arg) {
 			handle_alt_key(is,k2);
 		}
 		if (k == 3) {//^C, temporary
+			close_connection(is->sock);
+			close_windows();
 			exit(0);
 		}
 		if (k == 9) { //handle TAB
@@ -52,6 +54,12 @@ void* handle_keypresses(void* arg) {
 			write_network_line(buf,is->sock);
 			cur = 0;
 			buf[0] = '\0';
+		}
+		if (k == KEY_NPAGE) {//page down
+			scroll_main(is->W, -1);
+		}
+		if (k == KEY_PPAGE) {//page up
+			scroll_main(is->W, 1);
 		}
 		
 		write_bottom(is->W, buf);
