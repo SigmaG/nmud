@@ -141,7 +141,6 @@ int write_main(struct windows* W, char* l) {
 int scroll_win(struct win* wi, int num) {
 	if (num == 0) return 0;
 	if (num > 0) { //upwards
-	fprintf(stderr,"UPWARDS start: bottom_line %d - wi->buf->fill %d - scrolling %d - top_line %d\n",wi->bottom_line,wi->buf->fill,wi->scrolling,wi->top_line);
 		if (wi->top_line > 0) {
 			wi->top_line -= num;
 			if (wi->top_line < 0) wi->top_line = 0;
@@ -151,9 +150,7 @@ int scroll_win(struct win* wi, int num) {
 		} else {
 			return 0;
 		}
-	fprintf(stderr,"UPWARDS end: bottom_line %d - wi->buf->fill %d - scrolling %d - top_line %d\n",wi->bottom_line,wi->buf->fill,wi->scrolling,wi->top_line);
 	} else { // downwards
-	fprintf(stderr,"DOWNWARDS start: bottom_line %d - wi->buf->fill %d - scrolling %d - top_line %d\n",wi->bottom_line,wi->buf->fill,wi->scrolling,wi->top_line);
 		if (wi->scrolling == 1) {
 			if (wi->bottom_line - num > wi->buf->fill) {
 				wi->bottom_line = wi->buf->fill;
@@ -170,7 +167,6 @@ int scroll_win(struct win* wi, int num) {
 		} else {
 			return 0;
 		}
-	fprintf(stderr,"DOWNWARDS end: bottom_line %d - wi->buf->fill %d - scrolling %d - top_line %d\n",wi->bottom_line,wi->buf->fill,wi->scrolling,wi->top_line);
 	}
 	int i;
 /*	char* empty_line;
@@ -237,7 +233,6 @@ int write_win(struct win* wi, char* l) {
 		}
 	}
 	wrefresh(wi->w);
-	fprintf(stderr,"FIRST LINE in buffer #%d: %s\n",wi,*wi->buf->start);
 	return 0;
 }
 
