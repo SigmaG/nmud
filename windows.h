@@ -8,11 +8,6 @@ struct windows {
 	struct win* b_win;
 };
 
-struct win {
-	WINDOW* w;
-	char** buf;
-};
-
 int initialize_windows();
 struct windows* prepare_windows(struct conf* c);
 int close_windows();

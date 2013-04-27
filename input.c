@@ -37,7 +37,7 @@ void* handle_keypresses(void* arg) {
 			exit(0);
 		}
 		if (k == 9) { //handle TAB
-			write_bottom(is->W,"TAAAAB");
+			write_top(is->W,"TAAAAB\n");
 		}
 		if (k == KEY_BACKSPACE) { //backwards
 			clear_bottom(is->W);
@@ -56,10 +56,10 @@ void* handle_keypresses(void* arg) {
 			buf[0] = '\0';
 		}
 		if (k == KEY_NPAGE) {//page down
-			scroll_main(is->W, -1);
+			scroll_main(is->W, -5);
 		}
 		if (k == KEY_PPAGE) {//page up
-			scroll_main(is->W, 1);
+			scroll_main(is->W, 5);
 		}
 		
 		write_bottom(is->W, buf);
