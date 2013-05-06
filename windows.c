@@ -27,7 +27,16 @@ int initialize_windows() {
 	nonl();
 	intrflush(stdscr,FALSE);
 	keypad(stdscr,TRUE);
-	
+
+	int bg;
+	int fg;
+	for (bg = 0; bg < 8; bg++) {
+	for (fg = 0; fg < 8; fg++) {
+		if (bg+fg > 0) {
+			init_pair(fg+8*bg,fg,bg);
+		}
+	}
+	}	
 	return 0;
 
 }
@@ -116,6 +125,120 @@ struct windows* prepare_windows(struct conf* cnf) {
 	redraw_borders(W);
 	return W;
 }
+
+
+
+int is_letter(char s) {
+	return ( ((int) s > 64) && ((int) s < 91) ) || ( ((int) s > 96) && ((int) s < 123) );
+}
+
+int get_number(char s) {
+	int r = (int) s - 48;
+	if ((r > 0) && (r < 10)) {
+		return r;
+	} else {
+		return 0;
+	}
+}
+
+
+int mvcprintw(WINDOW* win, int row, int col, char* line,...) {
+	va_list ap;
+	va_start(ap,line);
+	char* final;
+	int i = 3*strlen(line);
+	final = malloc(i*sizeof(char));
+	int f_size;
+	wattrset(win,A_NORMAL); // maybe remove this?
+	while (1) {
+		f_size = vsnprintf(final,i,line,ap);
+		if (i > f_size) break;
+		void* f;
+		i += strlen(line);
+		f = realloc(final,i*sizeof(char));
+	}
+	wmove(win,row,col);
+	char* cur;
+	cur = final;
+	while (1) {
+		if (*cur == '\0') break;
+		if (*cur == '\033') {
+			char* seq = cur+1;
+			while (!is_letter(*seq) && (seq - final < f_size)) {
+				seq += 1;
+			}
+			char esc_type = *seq;
+			if (esc_type == 'm') { //select graphic rendition
+				seq = cur + 1;
+				int value = 0;
+				int fg;
+				int bg;
+				attr_t* at;
+				at = malloc(sizeof(attr_t)*2);
+				short* pair;
+				pair = malloc(sizeof(short));
+				attr_get(at,pair,NULL);
+				fg = PAIR_NUMBER(*pair) % 8;
+				bg = PAIR_NUMBER(*pair) / 8;
+				while (1) {
+					if ((*seq == ';') || is_letter(*seq) || (seq-final ==f_size)) { //end of value, now do something with it
+						if (value == 0) {
+							wattrset(win,A_NORMAL);
+						}
+						if (value == 1) {
+							wattron(win,A_STANDOUT);
+						}
+						if (value == 4) {
+							wattron(win,A_UNDERLINE);
+						}
+						if ((value == 5) || (value == 6)) {
+							wattron(win,A_BLINK);
+						}
+						if (value == 7) {
+							wattron(win,A_REVERSE);
+						}
+						if (value == 2) {
+							wattron(win,A_DIM);
+						}
+						if (value == 22) {
+							wattroff(win,A_STANDOUT);
+							wattroff(win,A_DIM);
+						}
+						if (value == 24) {
+							wattroff(win,A_UNDERLINE);
+						}
+						if (value == 25) {
+							wattroff(win,A_BLINK);
+						}
+						if (value == 27) {
+							wattroff(win,A_REVERSE);
+						}
+						if ((value >= 30) && (value <= 37)) {
+							fg = value - 30;
+						} 
+						if ((value >= 40) && (value <= 47)) {
+							bg = value - 40;
+						} 
+						value = 0;
+						if (is_letter(*seq) || (seq - final == f_size)) {
+							wattron(win,COLOR_PAIR(fg+bg*8));
+							break;
+						}
+					} else {
+						value *= 10;
+						value += get_number(*seq);
+					}
+					seq += 1;
+				}
+			}
+			cur = seq + 1;
+		} else {
+			wprintw(win,"%c",*cur);
+			cur += 1;
+		}
+	}
+}
+
 
 /*
 int write_main(struct windows* W, char* l) {
@@ -217,7 +340,7 @@ int write_win(struct win* wi, char* l) {
 	if (wi->buf->fill < getmaxy(wi->w) - 1) { //still filling the window
 		wi->top_line = 0;
 		wi->bottom_line = wi->buf->fill;
-		mvwprintw(wi->w,getmaxy(wi->w)-1,0,"%s",l);
+		mvcprintw(wi->w,getmaxy(wi->w)-1,0,"%s",l);
 	} else { //window full
 		if (wi->scrolling == 1) {// are we scrolling?
 			//more text in buffer but window doesn't move, sooo
@@ -229,7 +352,7 @@ int write_win(struct win* wi, char* l) {
 				wi->top_line++;
 				wi->bottom_line++;
 			} 
-			mvwprintw(wi->w,getmaxy(wi->w)-1,0,"%s",l);
+			mvcprintw(wi->w,getmaxy(wi->w)-1,0,"%s",l);
 		}
 	}
 	wrefresh(wi->w);
@@ -282,3 +405,6 @@ int clear_main(struct windows* W) {
 	clear_window(W->m_win);
 	redraw_borders(W);
 }
+
+
+
