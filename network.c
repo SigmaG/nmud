@@ -41,6 +41,16 @@ return mudsock;
 //block or non block?
 }
 
+void removeChar(char *str, char garbage) {
+
+    char *src, *dst;
+    for (src = dst = str; *src != '\0'; src++) {
+        *dst = *src;
+        if (*dst != garbage) dst++;
+    }
+    *dst = '\0';
+}
+
 char* read_network_line(int sock) {
 	int m = 256;
 	char* sss = malloc(m*sizeof(char));
@@ -56,12 +66,14 @@ char* read_network_line(int sock) {
 		if (nl < k) {
 			k = recv(sock,sss,nl+1,0);
 			sss[nl+1]='\0';
+			removeChar(sss,'\r');
 			return sss;
 		}
 		if (k == m) {
 			m *= 2;
 		} else {
 			k = recv(sock,sss,m,0);
+			removeChar(sss,'\r');
 			return sss;
 		}
 	}

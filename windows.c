@@ -225,11 +225,16 @@ int mvcprintw(WINDOW* win, int row, int col, char* line,...) {
 							break;
 						}
 					} else {
-						value *= 10;
-						value += get_number(*seq);
+						if (*seq == '[') { //wtf is this, ignore
+						} else {
+							value *= 10;
+							value += get_number(*seq);
+						}
 					}
 					seq += 1;
 				}
+			} else {
+				display_error("Unknown escape type %c\n",esc_type);
 			}
 			cur = seq + 1;
 		} else {
