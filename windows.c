@@ -186,7 +186,7 @@ int mvcprintw(WINDOW* win, int row, int col, char* line,...) {
 							wattrset(win,A_NORMAL);
 						}
 						if (value == 1) {
-							wattron(win,A_STANDOUT);
+							wattron(win,A_BOLD);
 						}
 						if (value == 4) {
 							wattron(win,A_UNDERLINE);
@@ -201,7 +201,7 @@ int mvcprintw(WINDOW* win, int row, int col, char* line,...) {
 							wattron(win,A_DIM);
 						}
 						if (value == 22) {
-							wattroff(win,A_STANDOUT);
+							wattroff(win,A_BOLD);
 							wattroff(win,A_DIM);
 						}
 						if (value == 24) {
