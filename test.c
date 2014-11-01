@@ -11,9 +11,6 @@ void* recv_thread(void *arg) {
 	struct recv_info* ri;
 	ri = (struct recv_info *) arg;
 	char *line;
-int i = 0;
-//while (i < 10) {
-//i+=1;
 	while (1) {
 		line = (char*) read_network_line(ri->sock);
 		write_main(ri->W,line);

@@ -39,7 +39,7 @@ void* handle_keypresses(void* arg) {
 		if (k == 9) { //handle TAB
 			write_top(is->W,"TAAAAB\n");
 		}
-		if (k == KEY_BACKSPACE) { //backwards
+		if (k == KEY_BACKSPACE || k == 8 || k == 127) { //backwards
 			clear_bottom(is->W);
 			cur -= 1;
 			if (cur < 0) {
